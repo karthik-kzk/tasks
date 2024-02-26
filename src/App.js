@@ -1,7 +1,23 @@
+import { useEffect, useState } from "react";
 import "./App.css";
-import Taskmodel from "./components/Taskmodel";
+import Taskmodel from "./components/Taskmodel.js";
+import mockData from "./components/data";
 
 function App() {
+  const [data, setData] = useState(mockData);
+  const [selected, setSelected] = useState("");
+
+  const onClick = (e) => {
+    const selected=data.filter((v)=>v.id==e.target.id)
+    
+    setSelected(selected[0]);
+  };
+
+  useEffect(() => {
+    console.log(mockData);
+    // setData(mockData)
+    console.log(data);
+  }, []);
   return (
     <div className="container">
       {/* make this symbol */}
@@ -25,23 +41,30 @@ function App() {
       <div className="row ">
         <div className="card" style={{ width: "18rem" }}>
           <ul className="list-group list-group-flush">
-            <li className="list-group-item">
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  value=""
-                  id="flexCheckDefault"
-                />
-                <label
-                  className="form-check-label "
-                  data-toggle="modal"
-                  data-target="#exampleModal"
-                >
-                  task one
-                </label>
-              </div>
-            </li>
+            {data.map((x) => {
+              return (
+                <li className="list-group-item" key={x.id}>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      value={x.title}
+                      id="flexCheckDefault"
+                    />
+                    <label
+                      className="form-check-label "
+                      data-toggle="modal"
+                      data-target="#exampleModal"
+                      onClick={onClick}
+                      id={x.id}
+                    >
+                      {x.title}
+                    </label>
+                  </div>
+                </li>
+              );
+            })}
+
             <li className="list-group-item">
               <div className="form-check   ">
                 <input
@@ -55,14 +78,14 @@ function App() {
                   data-toggle="modal"
                   data-target="#exampleModal"
                 >
-                  task two
+                  dummy
                 </label>
               </div>
             </li>
           </ul>
         </div>
 
-        <Taskmodel />
+        <Taskmodel title={selected} />
       </div>
     </div>
   );

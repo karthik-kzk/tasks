@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-const Taskmodel = () => {
+const Taskmodel = (props) => {
+  const {title} =props.title
   const [titleInputToggle, setTitleInputToggle] = useState(false);
   return (
     <div>
@@ -22,7 +23,7 @@ const Taskmodel = () => {
                   className="form-control modal-title"
                   id="exampleFormControlInput1"
                   placeholder="task title"
-                  value={""}
+                  value={title}
                 />
               </h5>
 
@@ -36,7 +37,7 @@ const Taskmodel = () => {
               </button>
             </div>
             <div className="modal-body">
-              {" "}
+              
               <input
                 type="email"
                 className="form-control modal-title"
