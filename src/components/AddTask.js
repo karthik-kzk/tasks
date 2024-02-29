@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 
 // to do
-// local storage
-// add catogories
+// local storage -half done
+// add catogories - half done
 // add color by categories
 // click and drag || move categories with drop drown
 
