@@ -7,22 +7,48 @@ import { useState, useEffect } from "react";
 // click and drag || move categories with drop drown
 
 function groupBy(array) {
-  const result={}
+  const result = {};
   for (let i = 0; i < array.length; i++) {
     result[array[i].tags] = [];
 
     for (let j = 0; j < array.length; j++) {
-      if (array[i].tags == array[j].tags)
-        result[array[i].tags].push(array[j].title);
+      if (array[i].tags == array[j].tags) result[array[i].tags].push(array[j]);
     }
   }
-  return result
+  return result;
+}
+
+function renderList(array, onEdit) {
+  const obj = groupBy(array)
+const rows=[];
+  for (const variable in obj) {
+    console.log(variable)
+
+    rows.push  (<>
+        <li className="list-group-item bg-info"  key={variable}>
+          {variable}
+        </li>
+        {obj[variable].map((val,index) => {
+          return (
+            <ul class="list-group">
+              <li class="list-group-item " id={index} onClick={onEdit}>{val.title}</li>
+            </ul>
+          );
+        })}
+      </>)
+ 
+  }
+  return rows
 }
 
 const mockData = [
   {
     title: "one",
     tags: "#eat",
+  },
+  {
+    title: "one",
+    tags: "#work",
   },
 ];
 
@@ -37,7 +63,7 @@ export const AddTask = () => {
     const strArray = addTask.split("#");
     const task = {};
     task.title = strArray[0];
-    task.tags = "#" + strArray[1] || "default";
+    task.tags =  strArray[1]!=undefined?'#' + strArray[1]: "#default";
 
     if (editId !== -1) {
       const editedList = list;
@@ -73,6 +99,7 @@ export const AddTask = () => {
   }, []);
   useEffect(() => {
     localStorage.setItem("list", JSON.stringify(list));
+    // renderList(list,onEdit);
   }, [list]);
 
   return (
@@ -80,7 +107,7 @@ export const AddTask = () => {
       <div className="card mx-auto mt-3" style={{ width: "26rem" }}>
         <form className="card-body">
           <div className="mb-3">
-            <label for="exampleInputEmail1" className="form-label">
+            <label htmlfor="exampleInputEmail1" className="form-label">
               {editId === -1 ? "add task" : "edit task"}
             </label>
             <input
@@ -98,8 +125,9 @@ export const AddTask = () => {
           </button>
         </form>
       </div>
-      <ul class="list-group">
-        {list?.map((v, i) => {
+      <ul className="list-group">
+        {renderList(list, onEdit)}
+        {/* {list?.map((v, i) => {
           return (
             <>
               <li class="list-group-item" id={i} onClick={onEdit}>
@@ -110,7 +138,7 @@ export const AddTask = () => {
               </ul>
             </>
           );
-        })}
+        })} */}
       </ul>
     </div>
   );
