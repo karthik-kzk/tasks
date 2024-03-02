@@ -11,6 +11,7 @@ import "./AddTask.css";
 // add drop status
 // add anchor tab for tags
 // add count for tags section
+// update add button 
 
 
 
@@ -19,11 +20,13 @@ const mockData = [
     id: 1,
     title: "one",
     tags: "#eat",
+    status:"completed",//pending|completed|dropped
   },
   {
     id: 2,
-    title: "one",
+    title: "two",
     tags: "#work",
+    status: "pending",
   },
 ];
 
@@ -39,7 +42,7 @@ function groupBy(array) {
   return result;
 }
 
-function renderList(array, onEdit) {
+function renderList(array, onEdit,onComplete) {
   const obj = groupBy(array);
   const rows = [];
   for (const variable in obj) {
@@ -53,8 +56,14 @@ function renderList(array, onEdit) {
           </li>
           {obj[variable].map((val, index) => {
             return (
-              <li class="list-group-item " id={val.id} onClick={onEdit}>
-                {val.title}
+              <li class="list-group-item " >
+                <div class="form-check" >
+                  <input class="form-check-input" type="checkbox" id={val.id} onChange={onComplete}  checked={val.status==='completed'}/>
+                  <label class="form-check-label" for="flexCheckChecked" id={val.id} onClick={onEdit}>
+                    {val.title}
+                    </label>
+                </div>
+                
               </li>
             );
           })}
@@ -64,6 +73,8 @@ function renderList(array, onEdit) {
   }
   return rows;
 }
+
+
 
 function submitCard() {}
 
@@ -94,6 +105,7 @@ export const AddTask = () => {
     console.log(list);
     setAddTask("");
     setEditId(-1);
+    setAddTaskToggle(false);
   };
 
   const onChange = (event) => {
@@ -103,13 +115,24 @@ export const AddTask = () => {
   const onEdit = (e) => {
     const id = e.target.id;
     const index = list.findIndex((v) => v.id === parseInt(id));
-    setEditId(index);
-    setAddTaskToggle(true);
-    if (index) {
+   
+    if (index!==-1) {
+      setEditId(index);
+      setAddTaskToggle(true);
       const str = `${list[index].title}  ${list[index].tags}`;
       setAddTask(str);
     }
   };
+
+  function onComplete(e){
+
+    const id = e.target.id;
+    e.preventDefault();
+    const index = list.findIndex((v) => v.id === parseInt(id));
+    const updatedList=list
+    updatedList[index].status='completed';
+    setList(updatedList);
+  }
 
   function onAddTaskClose() {
     setAddTaskToggle(false);
@@ -117,13 +140,13 @@ export const AddTask = () => {
     setEditId(-1);
   }
 
-  useEffect(() => {
-    const list = JSON.parse(localStorage.getItem("list"));
-    if (list) setList(list);
-  }, []);
+  // useEffect(() => {
+  //   const list = JSON.parse(localStorage.getItem("list"));
+  //   if (list) setList(list);
+  // }, []);
   useEffect(() => {
     localStorage.setItem("list", JSON.stringify(list));
-    // renderList(list,onEdit);
+    // renderList(list,onEdit,onComplete);
   }, [list]);
 
   return (
@@ -166,7 +189,7 @@ export const AddTask = () => {
         </div>
       )}
       <ul className="list-group">
-        {renderList(list, onEdit)}
+        {renderList(list, onEdit, onComplete)}
         {/* {list?.map((v, i) => {
           return (
             <>
