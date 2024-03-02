@@ -1,0 +1,23 @@
+.fixed {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 300px;
+  border: 3px solid #73ad21;
+  z-index: 1;
+}
+
+.addCard {
+  position: fixed;
+  border: 3px solid #e93a3a;
+  z-index: 1;
+  margin: 0;
+  top: 50%;
+  left: 35%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.list-group{
+    width:26rem;
+}

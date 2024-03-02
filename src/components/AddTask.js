@@ -1,10 +1,31 @@
 import { useState, useEffect } from "react";
+import "./AddTask.css";
 
-// to do
+// to-do
 // local storage -half done
-// add catogories - half done
-// add color by categories
+// add color by categories -pending
 // click and drag || move categories with drop drown
+// fix alignment margin padding of list group
+// add complete status checkbox
+// add top margin
+// add drop status
+// add anchor tab for tags
+// add count for tags section
+
+
+
+const mockData = [
+  {
+    id: 1,
+    title: "one",
+    tags: "#eat",
+  },
+  {
+    id: 2,
+    title: "one",
+    tags: "#work",
+  },
+];
 
 function groupBy(array) {
   const result = {};
@@ -19,51 +40,47 @@ function groupBy(array) {
 }
 
 function renderList(array, onEdit) {
-  const obj = groupBy(array)
-const rows=[];
+  const obj = groupBy(array);
+  const rows = [];
   for (const variable in obj) {
-    console.log(variable)
+    console.log(variable);
 
-    rows.push  (<>
-        <li className="list-group-item bg-info"  key={variable}>
-          {variable}
-        </li>
-        {obj[variable].map((val,index) => {
-          return (
-            <ul class="list-group">
-              <li class="list-group-item " id={index} onClick={onEdit}>{val.title}</li>
-            </ul>
-          );
-        })}
-      </>)
- 
+    rows.push(
+      <>
+        <ul class="list-group ">
+          <li className="list-group-item bg-info" key={variable}>
+            {variable}
+          </li>
+          {obj[variable].map((val, index) => {
+            return (
+              <li class="list-group-item " id={val.id} onClick={onEdit}>
+                {val.title}
+              </li>
+            );
+          })}
+        </ul>
+      </>
+    );
   }
-  return rows
+  return rows;
 }
 
-const mockData = [
-  {
-    title: "one",
-    tags: "#eat",
-  },
-  {
-    title: "one",
-    tags: "#work",
-  },
-];
+function submitCard() {}
 
 export const AddTask = () => {
   const [addTask, setAddTask] = useState("");
   const [list, setList] = useState(mockData);
   const [editId, setEditId] = useState(-1);
+  const [addTaskToggle, setAddTaskToggle] = useState(false);
 
   const onSubmit = (e) => {
     console.log("email", addTask, editId);
     e.preventDefault();
     const strArray = addTask.split("#");
     const task = {};
+
     task.title = strArray[0];
-    task.tags =  strArray[1]!=undefined?'#' + strArray[1]: "#default";
+    task.tags = strArray[1] != undefined ? "#" + strArray[1] : "#default";
 
     if (editId !== -1) {
       const editedList = list;
@@ -71,7 +88,7 @@ export const AddTask = () => {
       setList(editedList);
     } else {
       // category #
-
+      task.id = list.length + 1;
       setList([...list, task]);
     }
     console.log(list);
@@ -85,13 +102,20 @@ export const AddTask = () => {
 
   const onEdit = (e) => {
     const id = e.target.id;
-
-    setEditId(id);
-    if (id) {
-      const str = `${list[id].title}  ${list[id].tags}`;
+    const index = list.findIndex((v) => v.id === parseInt(id));
+    setEditId(index);
+    setAddTaskToggle(true);
+    if (index) {
+      const str = `${list[index].title}  ${list[index].tags}`;
       setAddTask(str);
     }
   };
+
+  function onAddTaskClose() {
+    setAddTaskToggle(false);
+    setAddTask("");
+    setEditId(-1);
+  }
 
   useEffect(() => {
     const list = JSON.parse(localStorage.getItem("list"));
@@ -104,27 +128,43 @@ export const AddTask = () => {
 
   return (
     <div>
-      <div className="card mx-auto mt-3" style={{ width: "26rem" }}>
-        <form className="card-body">
-          <div className="mb-3">
-            <label htmlfor="exampleInputEmail1" className="form-label">
-              {editId === -1 ? "add task" : "edit task"}
-            </label>
-            <input
-              type="addTask"
-              className="form-control"
-              id="exampleInputEmail1"
-              aria-describedby="emailHelp"
-              value={addTask}
-              onChange={onChange}
-            />
-          </div>
-
-          <button type="submit" className="btn btn-primary" onClick={onSubmit}>
-            Submit
-          </button>
-        </form>
+      <div className="fixed">
+        <button onClick={() => setAddTaskToggle(true)}>ADD</button>
       </div>
+      {addTaskToggle && (
+        <div className="card mx-auto mt-3 addCard" style={{ width: "26rem" }}>
+          <form className="card-body">
+            <div className="mb-3">
+              <label htmlfor="exampleInputEmail1" className="form-label">
+                {editId === -1 ? "add task" : "edit task"}
+              </label>
+              <input
+                type="addTask"
+                className="form-control"
+                id="exampleInputEmail1"
+                aria-describedby="emailHelp"
+                value={addTask}
+                onChange={onChange}
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary"
+              onClick={onSubmit}
+            >
+              Submit
+            </button>
+            <button
+              type="submit"
+              className="btn btn-danger"
+              onClick={onAddTaskClose}
+            >
+              Close
+            </button>
+          </form>
+        </div>
+      )}
       <ul className="list-group">
         {renderList(list, onEdit)}
         {/* {list?.map((v, i) => {
