@@ -42,7 +42,7 @@ function groupBy(array) {
   return result;
 }
 
-function renderList(array, onEdit,onComplete) {
+function renderList(array, onEdit, onComplete, onDrop) {
   const obj = groupBy(array);
   const rows = [];
   for (const variable in obj) {
@@ -51,8 +51,9 @@ function renderList(array, onEdit,onComplete) {
     rows.push(
       <>
         <ul class="list-group ">
-          <li className="list-group-item bg-info" key={variable}>
+          <li className="list-group-item list-group-item-primary" key={variable}>
             {variable}
+            <span class="badge badge-light">{obj[variable].length}</span>
           </li>
           {obj[variable].map((val, index) => {
             return (
@@ -62,6 +63,14 @@ function renderList(array, onEdit,onComplete) {
                   <label class="form-check-label" for="flexCheckChecked" id={val.id} onClick={onEdit}>
                     {val.title}
                     </label>
+                  <button
+                    type="submit"
+                    className="btn btn-outline-primary"
+                    id={val.id}
+                    onClick={onDrop}
+                  >
+                    Drop
+                  </button>
                 </div>
                 
               </li>
@@ -88,7 +97,9 @@ export const AddTask = () => {
     console.log("email", addTask, editId);
     e.preventDefault();
     const strArray = addTask.split("#");
-    const task = {};
+    const task = {
+      status:"pending"
+    };
 
     task.title = strArray[0];
     task.tags = strArray[1] != undefined ? "#" + strArray[1] : "#default";
@@ -140,6 +151,15 @@ export const AddTask = () => {
     setEditId(-1);
   }
 
+  function onDrop(e){
+    const id = e.target.id;
+    e.preventDefault();
+    const index = list.findIndex((v) => v.id === parseInt(id));
+    const updatedList = list
+    updatedList[index].status = 'dropped';
+    setList(updatedList);
+  }
+
   // useEffect(() => {
   //   const list = JSON.parse(localStorage.getItem("list"));
   //   if (list) setList(list);
@@ -173,23 +193,23 @@ export const AddTask = () => {
 
             <button
               type="submit"
-              className="btn btn-primary"
+              className="btn  btn-primary mr-1"
               onClick={onSubmit}
             >
               Submit
             </button>
             <button
               type="submit"
-              className="btn btn-danger"
+              className="btn  btn-neutral"
               onClick={onAddTaskClose}
             >
-              Close
+              Cancel
             </button>
           </form>
         </div>
       )}
       <ul className="list-group">
-        {renderList(list, onEdit, onComplete)}
+        {renderList(list, onEdit, onComplete, onDrop)}
         {/* {list?.map((v, i) => {
           return (
             <>
